@@ -6,9 +6,9 @@ let mainWindow;
 
 app.on('ready', _ => {
     mainWindow = new BrowserWindow({
-        width: 900,
-        height: 900,
-        resizable: true,
+        width: 0,
+        height: 0,
+        resizable: false,
         frame: false,
         webPreferences: {
             nodeIntegration: true
@@ -17,8 +17,6 @@ app.on('ready', _ => {
 
     const size = electron.screen.getPrimaryDisplay().workAreaSize;
 
-    mainWindow.openDevTools();
-
     mainWindow.loadURL(`file://${__dirname}/capture.html`)
 
     mainWindow.on('close', _ => {
@@ -26,7 +24,7 @@ app.on('ready', _ => {
     })
 
     globalShortcut.register('Ctrl+Alt+Shift+D', _ => {
-        console.log('Got shortcut');
+        console.log('Taking screenshot...');
         mainWindow.webContents.send('capture', app.getPath('pictures'), size);
     });
 
