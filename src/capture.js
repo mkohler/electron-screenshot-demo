@@ -2,24 +2,29 @@ const electron = require('electron');
 const fs = require('fs');
 const path = require('path');
 
-const { desktopCapturer, ipcRenderer: ipc, screen } = electron;
+const { desktopCapturer, ipcRenderer: ipc } = electron;
 
-function sources_callback(err, sources) {
-    if (err) {
-        return console.log('Cannot capture screen:', err)
-    }
-    console.log("sources are", sources);
 
-}
-
-function onCapture(evt, targetPath) {
-    console.log('capture');
+function onCapture(evt, targetDir, size) {
     const options = {
         types: ['screen'],
-        thumbnailSize: electron.screen.getPrimaryDisplay().workAreaSize };
+        thumbnailSize: size};
 
-    desktopCapturer.getSources(options, sources_callback);
+    desktopCapturer.getSources(options, (err, sources) => {
+        if (err) {
+            return console.log('Cannot capture screen:', err)
+        }
+        const source = sources.filter(isMainSource)[0];
+        const png = source.thumbnail.toPNG();
+        const filePath = path.join(targetDir, new Date() + '.png')
+        writeScreenshot(png, filePath);
+    });
 }
+
+function isMainSource(source) {
+    return source.name === 'Entire Screen' || source.name == 'Screen 1'
+}
+
 
 function writeScreenshot(png, filePath) {
     fs.writeFile(filePath, png, err => {

@@ -15,6 +15,8 @@ app.on('ready', _ => {
         }
     });
 
+    const size = electron.screen.getPrimaryDisplay().workAreaSize;
+
     mainWindow.openDevTools();
 
     mainWindow.loadURL(`file://${__dirname}/capture.html`)
@@ -25,7 +27,7 @@ app.on('ready', _ => {
 
     globalShortcut.register('Ctrl+Alt+Shift+D', _ => {
         console.log('Got shortcut');
-        mainWindow.webContents.send('capture', app.getPath('pictures'));
+        mainWindow.webContents.send('capture', app.getPath('pictures'), size);
     });
 
 });
